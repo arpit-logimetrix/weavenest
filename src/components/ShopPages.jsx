@@ -499,7 +499,7 @@ export function CartPage({
                       <div>
                         <h3>{item.title}</h3>
                         <p className="cart-line-variant">
-                          {item.selectedColor || item.color}
+                          {item.subtitle || item.color}
                           {item.selectedOption ? ` • ${item.selectedOption}` : ''}
                         </p>
                       </div>

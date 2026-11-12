@@ -9,6 +9,7 @@ const STORAGE_KEYS = {
   ADDRESSES: 'weavenest_addresses_v1',
   ORDERS: 'weavenest_orders_v1',
   NEWSLETTER: 'weavenest_newsletter_v1',
+  USER: 'weavenest_user_v1',
 };
 
 const DEFAULT_ADDRESSES = [
@@ -45,6 +46,53 @@ function safeWrite(key, value) {
 }
 
 export const storeService = {
+  getUser() {
+    return safeRead(STORAGE_KEYS.USER, null);
+  },
+
+  loginUser({ email, name }) {
+    const cleanEmail = String(email || '').trim().toLowerCase();
+    const displayName =
+      String(name || '').trim() ||
+      cleanEmail
+        .split('@')[0]
+        .replace(/[._-]+/g, ' ')
+        .replace(/\b\w/g, (c) => c.toUpperCase()) ||
+      'Weavenest Guest';
+    const user = {
+      id: `usr-${Date.now()}`,
+      name: displayName,
+      email: cleanEmail,
+      signedInAt: new Date().toISOString(),
+    };
+    safeWrite(STORAGE_KEYS.USER, user);
+    apiRequest('/auth/login', { method: 'POST', body: JSON.stringify({ email: cleanEmail }) }).catch(() => {});
+    return user;
+  },
+
+  registerUser({ name, email }) {
+    const cleanEmail = String(email || '').trim().toLowerCase();
+    const user = {
+      id: `usr-${Date.now()}`,
+      name: String(name || '').trim() || 'Weavenest Member',
+      email: cleanEmail,
+      signedInAt: new Date().toISOString(),
+    };
+    safeWrite(STORAGE_KEYS.USER, user);
+    apiRequest('/auth/register', { method: 'POST', body: JSON.stringify(user) }).catch(() => {});
+    return user;
+  },
+
+  logoutUser() {
+    try {
+      window.localStorage.removeItem(STORAGE_KEYS.USER);
+    } catch {
+      // Ignore storage errors
+    }
+    apiRequest('/auth/logout', { method: 'POST' }).catch(() => {});
+    return null;
+  },
+
   getCart() {
     return safeRead(STORAGE_KEYS.CART, []);
   },

@@ -12,6 +12,7 @@ import {
 
 export default function Header({
   currentRoute,
+  currentUser,
   wishlistCount,
   bagCount,
   searchQuery,
@@ -222,8 +223,8 @@ export default function Header({
           <button
             type="button"
             className="icon-action-btn header-account-btn"
-            aria-label="Account"
-            onClick={() => handleRouteNav('/account')}
+            aria-label={currentUser ? 'Account' : 'Sign In'}
+            onClick={() => handleRouteNav(currentUser ? '/account' : '/login')}
           >
             <UserIcon size={20} />
           </button>
@@ -358,8 +359,11 @@ export default function Header({
             </button>
 
             <div className="mobile-drawer-utility">
-              <button type="button" onClick={() => handleRouteNav('/account')}>
-                Account
+              <button
+                type="button"
+                onClick={() => handleRouteNav(currentUser ? '/account' : '/login')}
+              >
+                {currentUser ? 'Account' : 'Sign In'}
               </button>
               <button type="button" onClick={() => handleRouteNav('/wishlist')}>
                 Wishlist ({wishlistCount})

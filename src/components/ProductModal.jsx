@@ -23,9 +23,6 @@ export function ProductDetailContent({
 }) {
   const gallery = product.gallery?.length ? product.gallery : [product.image];
   const [activeImage, setActiveImage] = useState(gallery[0]);
-  const [selectedColor, setSelectedColor] = useState(
-    product.swatches?.[0]?.name || product.color
-  );
   const [selectedOption, setSelectedOption] = useState(product.options?.[0] || 'Standard');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('Description');
@@ -36,7 +33,6 @@ export function ProductDetailContent({
   useEffect(() => {
     const nextGallery = product.gallery?.length ? product.gallery : [product.image];
     setActiveImage(nextGallery[0]);
-    setSelectedColor(product.swatches?.[0]?.name || product.color);
     setSelectedOption(product.options?.[0] || 'Standard');
     setQuantity(1);
     setActiveTab('Description');
@@ -59,7 +55,6 @@ export function ProductDetailContent({
     ...product,
     price: effectiveUnitPrice,
     formattedPrice: `₹${effectiveUnitPrice.toLocaleString('en-IN')}`,
-    selectedColor,
     selectedOption,
     giftNote: giftNote.trim(),
   });
@@ -67,21 +62,23 @@ export function ProductDetailContent({
   return (
     <div className={`pdp-wrapper ${isModal ? 'is-modal-view' : ''}`}>
       <div className="pdp-main-grid">
-        {/* Left: Thumbnail rail + Hero Portrait */}
-        <div className="pdp-gallery-col">
-          <div className="pdp-thumbs-rail" role="tablist" aria-label="Product angles">
-            {gallery.map((imgSrc, idx) => (
-              <button
-                key={`${product.id}-thumb-${idx}`}
-                type="button"
-                className={`pdp-thumb-btn ${activeImage === imgSrc ? 'is-active' : ''}`}
-                onClick={() => setActiveImage(imgSrc)}
-                aria-label={`View image ${idx + 1}`}
-              >
-                <img src={imgSrc} alt={`${product.title} preview ${idx + 1}`} />
-              </button>
-            ))}
-          </div>
+        {/* Left: Thumbnail rail (only when multiple same-product angles exist) + Hero Portrait */}
+        <div className={`pdp-gallery-col ${gallery.length <= 1 ? 'is-single-image' : ''}`}>
+          {gallery.length > 1 && (
+            <div className="pdp-thumbs-rail" role="tablist" aria-label="Product angles">
+              {gallery.map((imgSrc, idx) => (
+                <button
+                  key={`${product.id}-thumb-${idx}`}
+                  type="button"
+                  className={`pdp-thumb-btn ${activeImage === imgSrc ? 'is-active' : ''}`}
+                  onClick={() => setActiveImage(imgSrc)}
+                  aria-label={`View image ${idx + 1}`}
+                >
+                  <img src={imgSrc} alt={`${product.title} preview ${idx + 1}`} />
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="pdp-hero-frame">
             <img src={activeImage} alt={product.alt} className="pdp-hero-img" />
@@ -123,29 +120,6 @@ export function ProductDetailContent({
           </div>
 
           <p className="pdp-short-summary">{product.description}</p>
-
-          {/* Swatches */}
-          {product.swatches?.length > 0 && (
-            <div className="pdp-option-block">
-              <div className="pdp-option-header">
-                <span>Colour:</span>
-                <strong>{selectedColor}</strong>
-              </div>
-              <div className="pdp-swatch-row">
-                {product.swatches.map((swatch) => (
-                  <button
-                    key={swatch.name}
-                    type="button"
-                    className={`pdp-swatch-dot ${selectedColor === swatch.name ? 'is-selected' : ''}`}
-                    style={{ backgroundColor: swatch.hex }}
-                    aria-label={`Select colour ${swatch.name}`}
-                    title={swatch.name}
-                    onClick={() => setSelectedColor(swatch.name)}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Dynamic Size / Finish Options */}
           {product.options?.length > 0 && (

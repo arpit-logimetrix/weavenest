@@ -201,7 +201,15 @@ export function BlogPage({ onNotify }) {
   );
 }
 
-export function CareAndLegalPage({ pageKey, orders = [], addresses = [], onNavigate, onNotify }) {
+export function CareAndLegalPage({
+  pageKey,
+  orders = [],
+  addresses = [],
+  currentUser = null,
+  onLogout,
+  onNavigate,
+  onNotify,
+}) {
   const [openFaq, setOpenFaq] = useState(0);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [contactSent, setContactSent] = useState(false);
@@ -293,7 +301,27 @@ export function CareAndLegalPage({ pageKey, orders = [], addresses = [], onNavig
       <div className="page-view static-page-shell">
         <div className="container static-page-narrow">
           <span className="hero-eyebrow">YOUR PROFILE</span>
-          <h1 className="page-heading-serif">My Account</h1>
+          <div className="account-header-row">
+            <div>
+              <h1 className="page-heading-serif">
+                {currentUser ? `Welcome, ${currentUser.name}` : 'My Account'}
+              </h1>
+              {currentUser && <p className="account-user-email">{currentUser.email}</p>}
+            </div>
+            {currentUser ? (
+              <button type="button" className="btn-outline-espresso" onClick={onLogout}>
+                Sign Out
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn-primary-espresso"
+                onClick={() => onNavigate('/login')}
+              >
+                Sign In
+              </button>
+            )}
+          </div>
           <div className="account-cards-grid">
             <div className="account-info-card">
               <h2>Saved Address</h2>

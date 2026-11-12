@@ -6,7 +6,6 @@ import OccasionSection from './components/OccasionSection';
 import ProductSection from './components/ProductSection';
 import HeritageBanner from './components/HeritageBanner';
 import Footer from './components/Footer';
-import ProductModal from './components/ProductModal';
 import { BagDrawer } from './components/Modals';
 import {
   CollectionPage,
@@ -21,6 +20,7 @@ import {
   CareAndLegalPage,
   NotFoundPage,
 } from './components/EditorialPages';
+import AuthPage from './components/AuthPage';
 import { CATALOG_PRODUCTS, FEATURED_PRODUCTS } from './data/catalog';
 import { storeService } from './services/storeService';
 
@@ -38,11 +38,13 @@ export default function App() {
     subtitle: 'Grace in every weave',
   });
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentUser, setCurrentUser] = useState(() => storeService.getUser());
+  const [pendingWishlistId, setPendingWishlistId] = useState(null);
+  const [postLoginRoute, setPostLoginRoute] = useState('/');
   const [wishlistIds, setWishlistIds] = useState(() => storeService.getWishlist());
   const [bagItems, setBagItems] = useState(() => storeService.getCart());
   const [addresses, setAddresses] = useState(() => storeService.getAddresses());
   const [orders, setOrders] = useState(() => storeService.getOrders());
-  const [modalProduct, setModalProduct] = useState(null);
   const [bagDrawerOpen, setBagDrawerOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
@@ -79,7 +81,51 @@ export default function App() {
 
   const showToast = (msg) => setToastMessage(msg);
 
+  const completeAuthSuccess = (user, welcomeMsg) => {
+    setCurrentUser(user);
+    if (pendingWishlistId) {
+      setWishlistIds((prev) => {
+        const next = prev.includes(pendingWishlistId) ? prev : [...prev, pendingWishlistId];
+        storeService.saveWishlist(next);
+        return next;
+      });
+      const target = postLoginRoute && postLoginRoute !== '/login' ? postLoginRoute : '/wishlist';
+      setPendingWishlistId(null);
+      setPostLoginRoute('/');
+      showToast('Signed in & added to your wishlist.');
+      navigate(target);
+      return;
+    }
+    showToast(welcomeMsg);
+    navigate('/account');
+  };
+
+  const handleLogin = ({ email }) => {
+    const user = storeService.loginUser({ email });
+    completeAuthSuccess(user, `Welcome back, ${user.name}.`);
+  };
+
+  const handleRegister = ({ name, email }) => {
+    const user = storeService.registerUser({ name, email });
+    completeAuthSuccess(user, `Welcome to The Weavenest, ${user.name}.`);
+  };
+
+  const handleLogout = () => {
+    storeService.logoutUser();
+    setCurrentUser(null);
+    showToast('You have been signed out.');
+    navigate('/');
+  };
+
   const handleToggleWishlist = (productId) => {
+    if (!currentUser) {
+      setPendingWishlistId(productId);
+      setPostLoginRoute(route);
+      showToast('Please sign in to add items to your wishlist.');
+      navigate('/login');
+      return;
+    }
+
     setWishlistIds((prev) => {
       const exists = prev.includes(productId);
       const next = exists ? prev.filter((id) => id !== productId) : [...prev, productId];
@@ -90,9 +136,7 @@ export default function App() {
   };
 
   const handleAddToBag = (product, qty = 1) => {
-    const cartKey = `${product.id}__${product.selectedColor || product.color}__${
-      product.selectedOption || 'standard'
-    }`;
+    const cartKey = `${product.id}__${product.selectedOption || 'standard'}`;
     setBagItems((prev) => {
       const existing = prev.find((item) => (item.cartKey || item.id) === cartKey);
       const next = existing
@@ -183,7 +227,7 @@ export default function App() {
             products={FEATURED_PRODUCTS}
             wishlistIds={wishlistIds}
             onToggleWishlist={handleToggleWishlist}
-            onOpenProduct={setModalProduct}
+            onOpenProduct={(prod) => navigate(`/product/${prod.id}`)}
             onAddToBag={(prod) => handleAddToBag(prod, 1)}
             onViewAll={() =>
               navigateCollection({
@@ -205,7 +249,7 @@ export default function App() {
           searchQuery={searchQuery}
           wishlistIds={wishlistIds}
           onToggleWishlist={handleToggleWishlist}
-          onOpenProduct={setModalProduct}
+          onOpenProduct={(prod) => navigate(`/product/${prod.id}`)}
           onAddToBag={(prod) => handleAddToBag(prod, 1)}
           onClearSearch={() => setSearchQuery('')}
         />
@@ -270,7 +314,7 @@ export default function App() {
             handleAddToBag(prod, 1);
             handleToggleWishlist(prod.id);
           }}
-          onOpenProduct={setModalProduct}
+          onOpenProduct={(prod) => navigate(`/product/${prod.id}`)}
           onContinueShopping={() =>
             navigateCollection({
               category: 'All',
@@ -278,6 +322,20 @@ export default function App() {
               subtitle: 'Grace in every weave',
             })
           }
+        />
+      );
+    }
+
+    if (route === '/login') {
+      const pendingProduct = pendingWishlistId
+        ? CATALOG_PRODUCTS.find((p) => p.id === pendingWishlistId)
+        : null;
+      return (
+        <AuthPage
+          pendingWishlistProduct={pendingProduct}
+          onLogin={handleLogin}
+          onRegister={handleRegister}
+          onBackToShop={() => navigate('/collections')}
         />
       );
     }
@@ -310,6 +368,8 @@ export default function App() {
           pageKey={staticRoutes[route]}
           orders={orders}
           addresses={addresses}
+          currentUser={currentUser}
+          onLogout={handleLogout}
           onNavigate={navigate}
           onNotify={showToast}
         />
@@ -325,6 +385,7 @@ export default function App() {
 
       <Header
         currentRoute={route}
+        currentUser={currentUser}
         wishlistCount={wishlistIds.length}
         bagCount={totalBagCount}
         searchQuery={searchQuery}
@@ -340,17 +401,6 @@ export default function App() {
       <main className="main-content">{renderPage()}</main>
 
       <Footer onNavigate={navigate} onNotify={showToast} />
-
-      <ProductModal
-        product={modalProduct}
-        wishlistIds={wishlistIds}
-        onClose={() => setModalProduct(null)}
-        onToggleWishlist={handleToggleWishlist}
-        onAddToBag={handleAddToBag}
-        onBuyNow={handleBuyNow}
-        onSelectProduct={setModalProduct}
-        onOpenFullPage={(prod) => navigate(`/product/${prod.id}`)}
-      />
 
       <BagDrawer
         open={bagDrawerOpen}

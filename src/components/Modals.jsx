@@ -78,7 +78,7 @@ export function BagDrawer({
                         </button>
                       </div>
                       <p className="drawer-item-sub">
-                        {item.selectedColor || item.color}
+                        {item.subtitle || item.color}
                         {item.selectedOption ? ` • ${item.selectedOption}` : ''}
                       </p>
                       <div className="drawer-item-bottom">
