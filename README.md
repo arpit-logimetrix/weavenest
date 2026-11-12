@@ -82,3 +82,4 @@ A mobile-first React + Vite e-commerce frontend for **The Weavenest**, crafted w
    ```bash
    npm run build
    ```
+
