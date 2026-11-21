@@ -433,14 +433,18 @@ textarea:focus-visible {
 /* ===========================
    3. HERO SECTION (MOBILE-FIRST)
 =========================== */
+/* ===========================
+   3. HERO SECTION (FULL PAGE CINEMATIC ADVERTISEMENT)
+=========================== */
 .hero-section {
   position: relative;
   width: 100%;
-  min-height: 520px;
+  min-height: 85vh;
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  justify-content: space-between;
   overflow: hidden;
-  background-color: #ebd9c1;
+  background-color: #1a0c06;
 }
 
 .hero-media-layer {
@@ -451,38 +455,130 @@ textarea:focus-visible {
   z-index: 1;
 }
 
-.hero-bg-img {
+.hero-bg-img,
+.hero-bg-video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 60% 10%;
+  object-position: center 25%;
+  pointer-events: none;
 }
 
+/* Subtle, light gradient overlay - keeps video bright and fully visible */
 .hero-gradient-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     0deg,
-    rgba(235, 217, 193, 0.96) 0%,
-    rgba(235, 217, 193, 0.88) 38%,
-    rgba(235, 217, 193, 0.36) 62%,
-    rgba(235, 217, 193, 0) 82%
+    rgba(15, 7, 4, 0.45) 0%,
+    rgba(15, 7, 4, 0.22) 38%,
+    rgba(15, 7, 4, 0.04) 65%,
+    transparent 100%
   );
+  pointer-events: none;
 }
 
+/* Cinematic letterbox top and bottom vignettes */
+.hero-vignette-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.25) 0%,
+    transparent 14%,
+    transparent 84%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
+  pointer-events: none;
+}
+
+/* Top Advertisement Campaign Header */
+.hero-top-ad-bar {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-top: 22px;
+}
+
+.hero-ad-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(26, 10, 5, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #faf3e8;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  border: 1px solid rgba(212, 175, 120, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.hero-ad-pulsing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.7;
+  }
+}
+
+.hero-sound-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(26, 10, 5, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #faf3e8;
+  font-size: 11.5px;
+  font-weight: 500;
+  border: 1px solid rgba(212, 175, 120, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.hero-sound-pill:hover {
+  background: rgba(26, 10, 5, 0.9);
+  transform: scale(1.05);
+}
+
+/* Main Hero Copy */
 .hero-content-container {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  min-height: 520px;
-  padding-top: 230px;
-  padding-bottom: 32px;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  flex: 1;
+  padding-top: 36px;
+  padding-bottom: 36px;
 }
 
 .hero-copy {
-  max-width: 495px;
+  max-width: 530px;
+  position: relative;
 }
 
 .hero-eyebrow-row {
@@ -496,41 +592,137 @@ textarea:focus-visible {
   display: inline-block;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--text-body);
+  color: #dfcaa7;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 .hero-eyebrow-line {
   width: 52px;
   height: 1px;
-  background-color: #cbbba7;
+  background-color: rgba(223, 202, 167, 0.75);
 }
 
 .hero-title {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: clamp(2.15rem, 6vw, 3.85rem);
+  font-size: clamp(2.2rem, 5.5vw, 4rem);
   font-weight: 400;
   line-height: 1.06;
   letter-spacing: -0.01em;
-  color: var(--text-espresso);
+  color: #ffffff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.75);
 }
 
 .hero-subtitle {
   margin: 14px 0 0;
-  max-width: 405px;
-  font-size: 14.5px;
-  line-height: 1.5;
-  color: var(--text-body);
+  max-width: 440px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #f7ede2;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
 }
 
 .hero-cta-row {
-  margin-top: 22px;
+  margin-top: 24px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 18px 26px;
+}
+
+.hero-copy .btn-primary-espresso {
+  background-color: #faf3e8;
+  color: var(--bg-espresso);
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.hero-copy .btn-primary-espresso:hover {
+  background-color: #ffffff;
+  color: #200f07;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.hero-copy .btn-link-underline {
+  color: #faf3e8;
+  border-bottom: 1px solid rgba(250, 243, 232, 0.85);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+.hero-copy .btn-link-underline:hover {
+  color: #ffffff;
+  border-bottom-color: #ffffff;
+  opacity: 1;
+}
+
+/* Bottom Shoppable Commercial Bar */
+.hero-bottom-ad-bar {
+  position: relative;
+  z-index: 4;
+  width: 100%;
+  background: rgba(20, 8, 4, 0.68);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(212, 175, 120, 0.35);
+  padding: 10px 0;
+}
+
+.hero-bottom-ad-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  color: #faf3e8;
+}
+
+.hero-bottom-ad-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+}
+
+.hero-bottom-ad-icon {
+  color: var(--accent-gold);
+  font-size: 13px;
+}
+
+.hero-bottom-ad-center {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(250, 243, 232, 0.75);
+}
+
+.hero-bottom-ad-sep {
+  color: rgba(212, 175, 120, 0.6);
+  font-size: 10px;
+}
+
+.hero-bottom-ad-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(212, 175, 120, 0.25);
+  border: 1px solid rgba(212, 175, 120, 0.6);
+  color: #fffaf3;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.hero-bottom-ad-btn:hover {
+  background: rgba(212, 175, 120, 0.45);
+  transform: translateY(-1px);
 }
 
 .btn-primary-espresso {
@@ -2687,38 +2879,26 @@ textarea:focus-visible {
   }
 
   .hero-section {
-    min-height: 485px;
-    flex-direction: row;
-    align-items: center;
+    min-height: 85vh;
   }
 
-  .hero-media-layer {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .hero-bg-img {
-    object-position: 78% 15%;
+  .hero-bg-img,
+  .hero-bg-video {
+    object-position: center center;
   }
 
   .hero-gradient-overlay {
     background: linear-gradient(
       90deg,
-      rgba(235, 217, 193, 0.90) 0%,
-      rgba(235, 217, 193, 0.84) 26%,
-      rgba(238, 221, 198, 0.62) 44%,
-      rgba(241, 225, 204, 0.18) 62%,
-      rgba(241, 225, 204, 0) 76%
+      rgba(15, 7, 4, 0.42) 0%,
+      rgba(15, 7, 4, 0.22) 28%,
+      rgba(15, 7, 4, 0.06) 50%,
+      transparent 68%
     );
   }
 
-  .hero-content-container {
-    min-height: 485px;
-    align-items: center;
-    padding-top: 44px;
-    padding-bottom: 44px;
+  .hero-bottom-ad-center {
+    display: flex;
   }
 
   .occasion-grid {
@@ -2843,19 +3023,14 @@ textarea:focus-visible {
     gap: 16px;
   }
 
-  .hero-section,
-  .hero-content-container {
-    min-height: 520px;
+  .hero-section {
+    min-height: calc(100vh - 82px);
+    max-height: 880px;
   }
 
-  .hero-bg-img {
-    object-position: 75% 15%;
-  }
-
-  .hero-badge-slot {
-    display: block;
-    align-self: flex-start;
-    margin-top: -6px;
+  .hero-bg-img,
+  .hero-bg-video {
+    object-position: 65% center;
   }
 
   .occasion-section {

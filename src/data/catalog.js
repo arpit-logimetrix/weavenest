@@ -19,11 +19,13 @@ import productEmeraldBanarasiSareeImg from '../assets/images/product-emerald-ban
 import heritageFabricBannerImg from '../assets/images/heritage-fabric-banner.webp';
 import aboutUrliBannerImg from '../assets/images/about-urli-banner.webp';
 import notFoundArchImg from '../assets/images/not-found-arch.webp';
+import heroVideo from '../assets/videos/home-short.mp4';
 
 export const BRAND_ASSETS = {
   logoHeader,
   logoFooter,
   heroSareeImg,
+  heroVideo,
   heritageFabricBannerImg,
   notFoundArchImg,
   aboutBannerImg: aboutUrliBannerImg,
